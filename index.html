@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ACE Enzyme VR Experience</title>
+    <meta name="description" content="View my ACE Enzyme and Enalaprilat model in VR">
+    <!-- 1. Load the A-Frame library -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <!-- 2. Create the VR scene -->
+    <a-scene renderer="alpha: true; colorManagement: true" background="color: #000000; transparent: true">
+      
+      <!-- 3. Your 3D Model -->
+      <!-- Replace 'path/to/your/ace-model.glb' with the correct file name -->
+      <a-entity gltf-model="/Users/Yasmin/Desktop/ACE enzyme/hala.glb" position="0 0 -2" scale="0.5 0.5 0.5"></a-entity>
+
+      <!-- 4. Lighting to make it look good -->
+      <a-light type="ambient" color="#445451"></a-light>
+      <a-light type="directional" color="#FFF" intensity="1" position="-0.5 1 1"></a-light>
+
+      <!-- 5. Controls for moving around -->
+      <a-entity id="rig" movement-controls="speed: 0.8">
+        <a-entity camera position="0 1.6 0" look-controls></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
