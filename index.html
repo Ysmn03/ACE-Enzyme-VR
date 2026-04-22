@@ -13,40 +13,68 @@
     <!-- Scene -->
     <a-scene vr-mode-ui="enabled: true">
 
-      <!-- Camera (VR Ready) -->
-      <a-entity 
-        camera 
-        look-controls 
-        cursor="fuse: true; fuseTimeout: 1500"
-        position="0 1.6 0">
+      <!-- 🔥 Camera Rig (Movement + VR) -->
+      <a-entity id="rig" movement-controls="speed: 0.2">
+
+        <!-- Camera -->
+        <a-entity 
+          camera 
+          position="0 1.6 0"
+          look-controls>
+        </a-entity>
+
+        <!-- Left Controller -->
+        <a-entity 
+          laser-controls="hand: left"
+          raycaster="objects: .clickable"
+          teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
+        </a-entity>
+
+        <!-- Right Controller -->
+        <a-entity 
+          laser-controls="hand: right"
+          raycaster="objects: .clickable"
+          teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
+        </a-entity>
+
       </a-entity>
 
-      <!-- 3D Model -->
+      <!-- 🟩 Floor -->
+      <a-plane 
+        rotation="-90 0 0" 
+        width="20" 
+        height="20" 
+        color="#7BC8A4">
+      </a-plane>
+
+      <!-- 🎯 3D Model (Clickable) -->
       <a-entity 
         id="ace-model"
+        class="clickable"
         gltf-model="url(https://pub-44eeecbb3572422d95761ec4fea50bbf.r2.dev/hala.glb)"
         position="0 1 -3"
-        scale="1 1 1"
-        animation-mixer>
+        scale="1 1 1">
       </a-entity>
 
       <!-- Sky -->
       <a-sky id="sky-image" src="red-blood-cells.jpg"></a-sky>
+
     </a-scene>
 
     <script>
-      function getModel() {
-        return document.getElementById('ace-model');
-      }
-
-      // تشغيل الأنيميشن تلقائي
       window.addEventListener('load', () => {
-        const model = getModel();
+        const model = document.getElementById('ace-model');
 
         if (model) {
-          model.setAttribute('animation-mixer', {
-            timeScale: 1,
-            loop: 'repeat'
+
+          // Start animation ONLY when clicked
+          model.addEventListener('click', () => {
+            console.log('▶️ Animation started');
+
+            model.setAttribute('animation-mixer', {
+              timeScale: 1,
+              loop: 'repeat'
+            });
           });
 
           model.addEventListener('model-loaded', () => {
@@ -58,7 +86,7 @@
           });
         }
 
-        console.log('🎮 VR Ready');
+        console.log('🎮 VR Ready (Meta Quest)');
       });
     </script>
   </body>
