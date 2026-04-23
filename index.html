@@ -4,36 +4,36 @@
     <meta charset="utf-8" />
     <title>VR Scene</title>
 
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
   </head>
 
   <body>
-    <!-- Scene -->
     <a-scene vr-mode-ui="enabled: true">
 
-      <!-- 🔥 Camera Rig (Movement + VR) -->
-      <a-entity id="rig" movement-controls="speed: 0.2">
+      <!-- 🧠 PLAYER RIG (THIS is what moves in VR) -->
+      <a-entity 
+        id="rig"
+        position="-134.113 65.134 114.640"
+        movement-controls="speed: 0.2">
 
-        <!-- Camera -->
-        <a-entity 
-          camera 
-          position="-134.113 65.134 114.640"
+        <!-- 👁 Camera (HEAD ONLY — DO NOT MOVE IT FOR VR) -->
+        <a-entity
+          camera
+          position="0 0 0"
           look-controls
-          wasd-controls="acceleration: 50"
           cursor="rayOrigin: mouse">
         </a-entity>
 
-        <!-- Left Controller -->
-        <a-entity 
+        <!-- 🎮 LEFT CONTROLLER -->
+        <a-entity
           laser-controls="hand: left"
           raycaster="objects: .clickable"
           teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
         </a-entity>
 
-        <!-- Right Controller -->
-        <a-entity 
+        <!-- 🎮 RIGHT CONTROLLER -->
+        <a-entity
           laser-controls="hand: right"
           raycaster="objects: .clickable"
           teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
@@ -41,18 +41,17 @@
 
       </a-entity>
 
-      <!-- 🟩 Floor -->
+      <!-- 🟩 Invisible Floor (required for teleport) -->
       <a-plane 
         position="-113.996 0 0"
         rotation="0 0 0"
         width="500"
         height="100"
         material="opacity: 0; transparent: true">
-        >
-      </a-plane>
+        > 
 
-      <!-- 🎯 3D Model (Clickable) -->
-      <a-entity 
+      <!-- 🎯 MODEL -->
+      <a-entity
         id="ace-model"
         class="clickable"
         gltf-model="url(https://pub-44eeecbb3572422d95761ec4fea50bbf.r2.dev/hala.glb)"
@@ -60,8 +59,8 @@
         scale="1 1 1">
       </a-entity>
 
-      <!-- Sky -->
-      <a-sky id="sky-image" src="red-blood-cells.jpg"></a-sky>
+      <!-- 🌌 SKY -->
+      <a-sky src="red-blood-cells.jpg"></a-sky>
 
     </a-scene>
 
@@ -69,29 +68,27 @@
       window.addEventListener('load', () => {
         const model = document.getElementById('ace-model');
 
-        if (model) {
+        // ▶️ Start animation ONLY on click
+        model.addEventListener('click', () => {
+          console.log('▶️ Animation started');
 
-          // Start animation ONLY when clicked
-          model.addEventListener('click', () => {
-            console.log('▶️ Animation started');
-
-            model.setAttribute('animation-mixer', {
-              timeScale: 1,
-              loop: 'repeat'
-            });
+          model.setAttribute('animation-mixer', {
+            timeScale: 1,
+            loop: 'repeat'
           });
+        });
 
-          model.addEventListener('model-loaded', () => {
-            console.log('✅ Model loaded');
-          });
+        model.addEventListener('model-loaded', () => {
+          console.log('✅ Model loaded');
+        });
 
-          model.addEventListener('model-error', (e) => {
-            console.error('❌ Error loading model:', e.detail);
-          });
-        }
+        model.addEventListener('model-error', (e) => {
+          console.error('❌ Error loading model:', e.detail);
+        });
 
         console.log('🎮 VR Ready (Meta Quest)');
       });
     </script>
+
   </body>
 </html>
