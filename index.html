@@ -11,13 +11,13 @@
   <body>
     <a-scene vr-mode-ui="enabled: true">
 
-      <!-- 🧠 PLAYER RIG (THIS is what moves in VR) -->
+      <!-- 🧠 PLAYER RIG -->
       <a-entity 
         id="rig"
         position="-134.113 65.134 114.640"
         movement-controls="speed: 0.2">
 
-        <!-- 👁 Camera (HEAD ONLY — DO NOT MOVE IT FOR VR) -->
+        <!-- 👁 Camera -->
         <a-entity
           camera
           position="0 0 0"
@@ -41,14 +41,13 @@
 
       </a-entity>
 
-      <!-- 🟩 Invisible Floor (required for teleport) -->
+      <!-- 🟩 FLOOR -->
       <a-plane 
         position="-113.996 0 0"
         rotation="0 0 0"
         width="500"
         height="100"
         material="opacity: 0; transparent: true">
-        >
       </a-plane>
 
       <!-- 🎯 MODEL -->
@@ -60,23 +59,61 @@
         scale="1 1 1">
       </a-entity>
 
+      <!-- 🎛 PLAY / PAUSE BUTTON -->
+      <a-box
+        id="animButton"
+        position="0 2 -2"
+        depth="0.1"
+        height="0.3"
+        width="0.8"
+        color="#4CC3D9"
+        class="clickable">
+      </a-box>
+
+      <a-text
+        value="Play / Pause Animation"
+        align="center"
+        position="0 2.1 -2"
+        color="#000">
+      </a-text>
+
       <!-- 🌌 SKY -->
       <a-sky src="red-blood-cells.jpg"></a-sky>
 
     </a-scene>
 
     <script>
+      let isPlaying = false;
+
       window.addEventListener('load', () => {
         const model = document.getElementById('ace-model');
+        const button = document.getElementById('animButton');
 
-        // ▶️ Start animation ONLY on click
-        model.addEventListener('click', () => {
-          console.log('▶️ Animation started');
+        let mixerConfig = {
+          timeScale: 0,
+          loop: 'repeat'
+        };
 
-          model.setAttribute('animation-mixer', {
-            timeScale: 1,
-            loop: 'repeat'
-          });
+        model.setAttribute('animation-mixer', mixerConfig);
+
+        // 🎮 Button toggle
+        button.addEventListener('click', () => {
+          isPlaying = !isPlaying;
+
+          if (isPlaying) {
+            console.log('▶️ Animation Play');
+            model.setAttribute('animation-mixer', {
+              timeScale: 1,
+              loop: 'repeat'
+            });
+            button.setAttribute('color', '#00FF88');
+          } else {
+            console.log('⏸ Animation Pause');
+            model.setAttribute('animation-mixer', {
+              timeScale: 0
+            });
+            button.setAttribute('color', '#4CC3D9');
+          }
         });
 
         model.addEventListener('model-loaded', () => {
