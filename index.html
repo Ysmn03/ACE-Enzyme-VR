@@ -4,61 +4,36 @@
     <meta charset="utf-8" />
     <title>VR Scene</title>
 
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
   </head>
 
   <body>
+    <!-- Scene -->
     <a-scene vr-mode-ui="enabled: true">
 
-      <!-- 🧠 PLAYER RIG -->
-      <a-entity
-        id="rig"
-        position="-134.113 65.134 114.640"
-        movement-controls="speed: 0.2"
-        wasd-controls="acceleration: 50">
+      <!-- 🔥 Camera Rig (Movement + VR) -->
+      <a-entity id="rig" movement-controls="speed: 0.2">
 
-        <!-- 👁 CAMERA -->
-        <a-entity
-          camera
-          position="0 0 0"
+        <!-- Camera -->
+        <a-entity 
+          camera 
+          position="-134.113 47.668 160.755"
           look-controls
+          wasd-controls="acceleration: 50"
           cursor="rayOrigin: mouse">
-           <!-- 🎛 Bottom-left UI -->
-            <a-entity position="-1.5 -0.7 -1">
-          
-              <!-- Button (smaller) -->
-              <a-box
-                id="animButton"
-                class="clickable"
-                position="0 0 0"
-                depth="0.05"
-                height="0.15"
-                width="0.2"
-                color="#FF0000">
-              </a-box>
-          
-              <!-- Label (smaller text) -->
-              <a-text
-                value="Play / Pause"
-                align="center"
-                position="0 0.2 0"
-                scale="0.35 0.35 0.35"
-                color="#FFFF">
-              </a-text>
-          
-            </a-entity>
         </a-entity>
-        
-        <!-- 🎮 LEFT CONTROLLER -->
-        <a-entity
+
+        <!-- Left Controller -->
+        <a-entity 
           laser-controls="hand: left"
           raycaster="objects: .clickable"
           teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
         </a-entity>
 
-        <!-- 🎮 RIGHT CONTROLLER -->
-        <a-entity
+        <!-- Right Controller -->
+        <a-entity 
           laser-controls="hand: right"
           raycaster="objects: .clickable"
           teleport-controls="cameraRig: #rig; teleportOrigin: #rig;">
@@ -66,73 +41,55 @@
 
       </a-entity>
 
-      <!-- 🟩 TELEPORT FLOOR -->
-      <a-plane
-        position="-150 50 0"
-        rotation="0 0 0"
-        width="500"
-        height="100"
+      <!-- 🟩 Floor -->
+      <a-plane 
+        rotation="-90 0 0" 
+        width="20" 
+        height="20" 
         material="opacity: 0; transparent: true">
       </a-plane>
 
-      <!-- 🎯 MODEL -->
-      <a-entity
+      <!-- 🎯 3D Model (Clickable) -->
+      <a-entity 
         id="ace-model"
         class="clickable"
-        <!-- gltf-model="url(https://pub-44eeecbb3572422d95761ec4fea50bbf.r2.dev/hala.glb)" -->
+        gltf-model="url(https://pub-44eeecbb3572422d95761ec4fea50bbf.r2.dev/hala.glb)"
         position="0 1 -3"
         scale="1 1 1">
       </a-entity>
 
-      <!-- 🌌 SKY -->
-      <a-sky src="red-blood-cells.jpg"></a-sky>
+      <!-- Sky -->
+      <a-sky id="sky-image" src="red-blood-cells.jpg"></a-sky>
 
     </a-scene>
 
     <script>
       window.addEventListener('load', () => {
         const model = document.getElementById('ace-model');
-        const button = document.getElementById('animButton');
 
-        let playing = false;
+        if (model) {
 
-        // Initialize paused animation
-        model.setAttribute('animation-mixer', {
-          timeScale: 0,
-          loop: 'repeat'
-        });
+          // Start animation ONLY when clicked
+          model.addEventListener('click', () => {
+            console.log('▶️ Animation started');
 
-        // 🎮 Button toggle
-        button.addEventListener('click', () => {
-          playing = !playing;
-
-          if (playing) {
-            console.log('▶️ Play animation');
             model.setAttribute('animation-mixer', {
               timeScale: 1,
               loop: 'repeat'
             });
-            button.setAttribute('color', '#00FF88');
-          } else {
-            console.log('⏸ Pause animation');
-            model.setAttribute('animation-mixer', {
-              timeScale: 0
-            });
-            button.setAttribute('color', '#4CC3D9');
-          }
-        });
+          });
 
-        model.addEventListener('model-loaded', () => {
-          console.log('✅ Model loaded');
-        });
+          model.addEventListener('model-loaded', () => {
+            console.log('✅ Model loaded');
+          });
 
-        model.addEventListener('model-error', (e) => {
-          console.error('❌ Model error:', e.detail);
-        });
+          model.addEventListener('model-error', (e) => {
+            console.error('❌ Error loading model:', e.detail);
+          });
+        }
 
-        console.log('🎮 VR Ready (Desktop + Meta Quest)');
+        console.log('🎮 VR Ready (Meta Quest)');
       });
     </script>
-
   </body>
 </html>
