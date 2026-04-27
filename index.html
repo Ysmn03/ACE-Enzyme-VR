@@ -3,30 +3,44 @@
 <head>
     <title>Basic VR Experience</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
 </head>
 <body>
     <a-scene>
+        <!-- Assets -->
         <a-assets>
             <img id="blood-cell-bg" src="red-blood-cells.jpg">
             <a-asset-item id="ACE-model" src="https://pub-44eeecbb3572422d95761ec4fea50bbf.r2.dev/hala.glb"></a-asset-item>
         </a-assets>
         
-        <!-- Use A-Frame's built-in movement-controls from CDN -->
+        <!-- Camera Rig with Basic Locomotion -->
         <a-entity id="rig" position="0 0 0">
+            <!-- Camera -->
             <a-entity camera position="0 1.6 0" look-controls></a-entity>
-            <a-entity laser-controls="hand: left"></a-entity>
-            <a-entity laser-controls="hand: right"></a-entity>
+            
+            <!-- Left Controller -->
+            <a-entity laser-controls="hand: left" raycaster="objects: .clickable"></a-entity>
+            
+            <!-- Right Controller -->
+            <a-entity laser-controls="hand: right" raycaster="objects: .clickable"></a-entity>
         </a-entity>
         
-        <!-- Add movement via wasd-controls (also works with thumbstick) -->
-        <a-entity wasd-controls="acceleration: 20; fly: false"></a-entity>
+        <!-- Basic Movement (Left Thumbstick) -->
+        <a-entity id="movement" movement-controls="speed: 2; fly: false; constrainToNavMesh: false"></a-entity>
         
-        <a-sphere src="#blood-cell-bg" radius="500" scale="-1 1 1" material="side: back"></a-sphere>
+        <!-- Environment -->
+        <a-sphere src="#blood-cell-bg" radius="500" scale="-1 1 1" material="side: back" position="0 0 0"></a-sphere>
         
+        <!-- Lighting -->
         <a-light type="ambient" intensity="0.5"></a-light>
         <a-light type="directional" intensity="0.8" position="5 10 3"></a-light>
         
-        <a-entity gltf-model="#ACE-model" position="0 0 -3"></a-entity>
+        <!-- Ground for Teleportation (Optional - remove if not needed) -->
+        <a-plane position="0 -0.1 0" rotation="-90 0 0" width="100" height="100" material="opacity: 0" class="clickable"></a-plane>
+        
+        <!-- ACE 3D Model -->
+        <a-entity gltf-model="#ACE-model" position="0 0 -3" scale="1 1 1" class="clickable"></a-entity>
+        
     </a-scene>
 </body>
 </html>
