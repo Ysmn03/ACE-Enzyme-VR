@@ -11,20 +11,22 @@
             init: function () {
                 let isPlaying = true;
                 const model = document.querySelector('#aceModel');
-                const label = this.el.querySelector('a-text');
 
                 this.el.addEventListener('click', () => {
                     const mixer = model.components['animation-mixer'];
+
                     if (!mixer) return;
 
                     isPlaying = !isPlaying;
 
                     if (isPlaying) {
                         mixer.play();
-                        label.setAttribute('value', 'Pause');
+                        this.el.querySelector('a-text')
+                            .setAttribute('value', 'Pause');
                     } else {
                         mixer.pause();
-                        label.setAttribute('value', 'Play');
+                        this.el.querySelector('a-text')
+                            .setAttribute('value', 'Play');
                     }
                 });
             }
@@ -49,31 +51,24 @@
             <!-- Camera -->
             <a-entity camera position="0 1.6 0" look-controls>
 
-                <!-- ✅ Button Container (bottom-left) -->
-                <a-entity 
+                <!-- ✅ Button (bottom-left) -->
+                <a-plane 
                     position="-0.6 -0.5 -1"
+                    width="0.4"
+                    height="0.2"
+                    color="#222"
                     class="clickable"
                     toggle-animation>
 
-                    <!-- Your Box -->
-                    <a-box
-                        id="animButton"
-                        depth="0.05"
-                        height="0.15"
-                        width="0.2"
-                        color="#FF0000">
-                    </a-box>
-
-                    <!-- Your Label -->
-                    <a-text
+                    <a-text 
                         value="Pause"
                         align="center"
-                        position="0 0.2 0"
+                        position="0 0 0.01"
                         scale="0.35 0.35 0.35"
-                        color="#FFFF">
+                        color="white">
                     </a-text>
 
-                </a-entity>
+                </a-plane>
 
             </a-entity>
 
@@ -105,7 +100,7 @@
             class="clickable">
         </a-plane>
 
-        <!-- Model -->
+        <!-- ✅ Model WITH built-in animation -->
         <a-entity 
             id="aceModel"
             gltf-model="#ACE-model"
