@@ -6,7 +6,13 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
 </head>
 <body>
-    <a-scene>
+    <a-scene 
+        keyboard-shortcuts="enterVR: false"
+        webxr="optionalFeatures: local-floor; requiredFeatures: local;"
+        vr-mode-ui="enterVRButton: auto;"
+        renderer="antialias: true; alpha: false; depth: true;"
+        loading-screen="enabled: false">
+        
         <!-- Assets -->
         <a-assets>
             <img id="blood-cell-bg" src="red-blood-cells.jpg">
@@ -16,7 +22,7 @@
         <!-- Camera Rig with Basic Locomotion -->
         <a-entity id="rig" position="0 0 0">
             <!-- Camera -->
-            <a-entity camera position="0 1.6 0" look-controls></a-entity>
+            <a-entity camera="active: true" position="0 1.6 0" look-controls></a-entity>
             
             <!-- Left Controller -->
             <a-entity laser-controls="hand: left" raycaster="objects: .clickable"></a-entity>
@@ -35,12 +41,112 @@
         <a-light type="ambient" intensity="0.5"></a-light>
         <a-light type="directional" intensity="0.8" position="5 10 3"></a-light>
         
-        <!-- Ground for Teleportation (Optional - remove if not needed) -->
+        <!-- Ground -->
         <a-plane position="0 -0.1 0" rotation="-90 0 0" width="100" height="100" material="opacity: 0" class="clickable"></a-plane>
         
         <!-- ACE 3D Model -->
         <a-entity gltf-model="#ACE-model" position="0 0 -3" scale="1 1 1" class="clickable"></a-entity>
         
     </a-scene>
+    
+    <script>
+        let isVRActive = false;
+        let sceneElement = null;
+        
+        // Wait for scene to load
+        window.addEventListener('load', function() {
+            sceneElement = document.querySelector('a-scene');
+            
+            // Handle VR session start
+            sceneElement.addEventListener('enter-vr', function() {
+                isVRActive = true;
+                console.log('VR mode entered successfully');
+            });
+            
+            // Handle VR session end
+            sceneElement.addEventListener('exit-vr', function() {
+                isVRActive = false;
+                console.log('VR mode exited');
+                // Reload scene if it crashed
+                if (document.body.style.backgroundColor === 'white' || 
+                    document.documentElement.style.backgroundColor === 'white') {
+                    location.reload();
+                }
+            });
+            
+            // Prevent controller events from bubbling incorrectly
+            const controllers = document.querySelectorAll('[laser-controls]');
+            controllers.forEach(controller => {
+                controller.addEventListener('triggerdown', function(e) {
+                    if (sceneElement.is('vr-mode')) {
+                        e.stopPropagation();
+                    }
+                });
+                
+                controller.addEventListener('triggerup', function(e) {
+                    if (sceneElement.is('vr-mode')) {
+                        e.stopPropagation();
+                    }
+                });
+            });
+            
+            // Handle WebXR errors
+            sceneElement.addEventListener('vrdisplaypresentchange', function() {
+                if (sceneElement.is('vr-mode')) {
+                    console.log('VR display active');
+                }
+            });
+            
+            // Error recovery
+            window.addEventListener('error', function(e) {
+                if (isVRActive) {
+                    console.error('Error during VR session:', e);
+                    // Attempt to recover
+                    setTimeout(function() {
+                        if (sceneElement && sceneElement.is('vr-mode')) {
+                            console.log('Attempting to recover VR session');
+                        }
+                    }, 100);
+                }
+            });
+        });
+        
+        // Prevent all keyboard and input events that might crash WebXR
+        const blockEvents = ['keydown', 'keyup', 'keypress', 'contextmenu', 'selectstart', 'dragstart'];
+        blockEvents.forEach(eventType => {
+            window.addEventListener(eventType, function(e) {
+                if (document.querySelector('a-scene') && document.querySelector('a-scene').is('vr-mode')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+        });
+        
+        // Handle visibility change (tab switching)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && isVRActive) {
+                console.log('Tab hidden during VR - may cause issues');
+            }
+        });
+        
+        // Prevent white screen from CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            body, html {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: black !important;
+            }
+            canvas {
+                background-color: black !important;
+            }
+            a-scene {
+                background-color: black !important;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
